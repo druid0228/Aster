@@ -56,6 +56,8 @@ class GameFramework
 	sf::RenderWindow sf_window;
 	sf::View sf_view;
 
+	sf::TcpSocket socket;
+
 	Ground m_ground;
 	Object m_object;
 public:
@@ -69,5 +71,7 @@ public:
 	void WindowEvent();
 	
 	void KeyboardInput();
+
+	void NetTest();
 };
 

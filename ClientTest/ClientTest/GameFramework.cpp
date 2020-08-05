@@ -105,5 +105,18 @@ void GameFramework::KeyboardInput()
 	{
 		sf_view.zoom(0.9);
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
+	{
+		NetTest();
+	}
+}
+
+void GameFramework::NetTest()
+{
+	std::cout << "NetTest\n";
+	socket.connect("127.0.0.1", 9000);
+	
+
+
 }
 
