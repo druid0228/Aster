@@ -115,8 +115,6 @@ void GameFramework::NetTest()
 {
 	std::cout << "NetTest\n";
 	socket.connect("127.0.0.1", 9000);
-	
-
 
 }
 
