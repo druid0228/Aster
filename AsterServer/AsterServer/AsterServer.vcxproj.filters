@@ -13,13 +13,37 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ExoverManager">
+      <UniqueIdentifier>{8720ce99-296c-4712-ab58-478d50b9b48b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{751adbde-b38d-4f08-82b5-190390947c72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\NPC">
+      <UniqueIdentifier>{abba38fd-e801-4df5-b184-0265f8686dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Player">
+      <UniqueIdentifier>{5cbdfd89-3ba6-4865-b8a0-a8e9c1d287e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\StaticObject">
+      <UniqueIdentifier>{61b4b182-5a7b-4840-ab67-1cb445a10487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects\Monster">
+      <UniqueIdentifier>{1c0f3a28-429f-486c-ac76-00a268f6f012}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="ExoverManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>ExoverManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Objects\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -27,7 +51,16 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="ExoverManager.h">
+      <Filter>ExoverManager</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Objects\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

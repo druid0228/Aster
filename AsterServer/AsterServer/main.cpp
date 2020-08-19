@@ -1,9 +1,21 @@
 #include "Headers.h"
 #include "ExoverManager.h"
+#include"protocol.h"
 
 HANDLE g_iocp;
 SOCKET l_socket;
 ExoverManager over_manager;
+
+void send_packet(int id,Packet* p)
+{
+
+	
+}
+
+void send_packet_login()
+{
+
+}
 
 void worker_thread()
 {
