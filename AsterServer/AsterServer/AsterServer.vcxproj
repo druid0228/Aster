@@ -147,6 +147,7 @@
     <ClInclude Include="BaseObject.h" />
     <ClInclude Include="ExoverManager.h" />
     <ClInclude Include="Headers.h" />
+    <ClInclude Include="Objects.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="protocol.h" />
   </ItemGroup>

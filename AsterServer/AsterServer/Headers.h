@@ -4,6 +4,8 @@
 #include<MSWSock.h>
 #include<vector>
 #include<thread>
+#include<atomic>
+#include<mutex>
 
 #pragma comment(lib,"Ws2_32.lib")
 #pragma comment(lib,"Mswsock.lib")
@@ -14,6 +16,23 @@ using namespace std;
 
 constexpr auto THREAD_NUM = 4;
 constexpr auto MAX_BUF_SIZE = 1024;
+constexpr auto MAX_PACKET_SIZE = 255;
+
+//----------------------------------------------------------------
+constexpr auto MAX_OBJECT = 10;
+constexpr auto OBJECT_BEGIN = 0;
+constexpr auto OBJECT_END = OBJECT_BEGIN + MAX_OBJECT;
+
+constexpr auto MAX_NPC = 10;
+constexpr auto NPC_BEGIN = OBJECT_END;
+constexpr auto NPC_END = NPC_BEGIN + MAX_NPC;
+
+constexpr auto MAX_USER = 100;
+constexpr auto USER_BEGIN = NPC_END;
+constexpr auto USER_END = USER_BEGIN + MAX_USER;
+
+constexpr auto MAX_CLEINTS = MAX_OBJECT + MAX_NPC + MAX_USER;
+//----------------------------------------------------------------
 
 enum OVEROP {
 	OP_RECV,OP_SEND,OP_ACCEPT
@@ -28,4 +47,11 @@ struct EXOVER {
 		WSABUF wsabuf;
 		SOCKET c_socket;
 	};
+};
+
+
+// Client status (not user)
+enum class CL_STATUS
+{
+	CS_FREE, CS_SLEEP, CS_ACTIVE
 };
