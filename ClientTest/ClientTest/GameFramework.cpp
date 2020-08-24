@@ -109,6 +109,10 @@ void GameFramework::KeyboardInput()
 	{
 		NetTest();
 	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+	{
+		TestPing();
+	}
 }
 
 void GameFramework::NetTest()
@@ -116,5 +120,16 @@ void GameFramework::NetTest()
 	std::cout << "NetTest\n";
 	socket.connect("127.0.0.1", 9000);
 
+}
+
+void GameFramework::TestPing()
+{
+	std::cout << "TestPing\n";
+	cs_packet_none p;
+
+	char* packet = reinterpret_cast<char*>(&p);
+	std::cout << "p[0]:" <<(int) packet[0] <<" "<<(int)packet[1]<< "\n";
+	size_t sent;
+	socket.send(packet, packet[0], sent);
 }
 

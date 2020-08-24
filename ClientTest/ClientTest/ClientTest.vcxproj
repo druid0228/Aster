@@ -173,6 +173,7 @@
     <Image Include="testBackground.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AsterServer\AsterServer\protocol.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="globalHeader.h" />
   </ItemGroup>

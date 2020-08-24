@@ -1,8 +1,13 @@
 #pragma once
 enum {
-	p_none,
-	p_login, p_disconnect,
-	p_move, p_attack
+	ps2c_none,
+	ps2c_login, ps2c_disconnect,
+	ps2c_move, ps2c_attack
+};
+
+enum {
+	pc2s_none,
+
 };
 
 #pragma pack(push,1)
@@ -12,9 +17,10 @@ struct Packet
 	char type;
 };
 
+// test
 struct loginPacket : Packet
 {
-	loginPacket() { size = sizeof(loginPacket), type = p_login; }
+	loginPacket() { size = sizeof(loginPacket), type = ps2c_login; }
 	int id;
 
 	int x, y;
@@ -30,9 +36,24 @@ struct loginPacket : Packet
 
 struct disconnectPacket : Packet
 {
-	disconnectPacket() { size = sizeof(disconnectPacket), type = p_disconnect; }
+	disconnectPacket() { size = sizeof(disconnectPacket), type = ps2c_disconnect; }
 
 
 };
+
+// Server to Client Packet
+struct sc_packet_none : Packet
+{
+	sc_packet_none() { size = sizeof(sc_packet_none), type = ps2c_none; }
+
+};
+
+// Client to Server Packet
+struct cs_packet_none : Packet
+{
+	cs_packet_none() { size = sizeof(cs_packet_none), type = pc2s_none; }
+};
+
+
 
 #pragma pack(pop)

@@ -35,19 +35,79 @@ void initialize_clients()
 	cout << " --initialize user\n";
 }
 
-void send_packet(int user_id, Packet* p)
+void send_packet(int user_id, void* p)
 {
 	Player* u = reinterpret_cast<Player*>(clients[user_id]);
 	char* buf = reinterpret_cast<char*>(p);
 
 	EXOVER* exover = over_manager.get();
-	exover->Init(OP_SEND, buf[0]);
+	//exover->Init(OP_SEND, buf[0]);
 	memcpy(exover->io_buf, buf, buf[0]);
 	WSASend(u->m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
 void send_packet_login()
 {
+
+}
+
+void send_none_packet(int user_id)
+{
+	sc_packet_none p;
+	send_packet(user_id, &p);
+}
+
+void test_ping(int user_id)
+{
+	cout << "send test[" << user_id << "]\n";
+	//send_none_packet(user_id);
+}
+
+void packet_process(int user_id, char* _packet)
+{
+	switch (_packet[1])
+	{
+	case pc2s_none:
+	{
+		cs_packet_none* packet = reinterpret_cast<cs_packet_none*>(_packet);
+		test_ping(user_id);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void packet_assembly(int user_id,int io_byte)
+{
+	Player& u = reinterpret_cast<Player&>(clients[user_id]);
+	EXOVER& r_o = u.m_recv_over;
+
+	char* p = r_o.io_buf;
+	int rest_byte = io_byte;
+	int packet_size = 0;
+	if (u.m_prev_size != 0)packet_size = u.m_packet_buf[0];
+	while (rest_byte > 0)
+	{
+		if (packet_size == 0) packet_size = *p;
+		if (u.m_prev_size + rest_byte >= packet_size)
+		{
+			int required = packet_size - u.m_prev_size;
+			memcpy(u.m_packet_buf+u.m_prev_size, r_o.io_buf, required);
+			p += required;
+			rest_byte -= required;
+			packet_size = 0;
+			packet_process(user_id, u.m_packet_buf);
+			u.m_prev_size = 0;
+		}
+		else 
+		{
+			memcpy(u.m_packet_buf + u.m_prev_size, p, rest_byte);
+			u.m_prev_size += rest_byte;
+			rest_byte = 0;
+			p += rest_byte;
+		}
+	}
 
 }
 
@@ -83,7 +143,7 @@ void worker_thread()
 		EXOVER* exover = reinterpret_cast<EXOVER*>(over);
 		int user_id = static_cast<int>(key);
 
-		Player* u = reinterpret_cast<Player*>(clients[user_id]);
+		Player& u = reinterpret_cast<Player&>(clients[user_id]);
 
 		switch (exover->op)
 		{
@@ -92,10 +152,12 @@ void worker_thread()
 			if (io_byte == 0)disconnect(user_id);
 			else
 			{
+				cout << "OP_RECV[" << user_id << "]\n";
+				packet_assembly(user_id,io_byte);
 
-				ZeroMemory(&u->m_recv_over.over, sizeof(u->m_recv_over.over));
+				ZeroMemory(&u.m_recv_over.over, sizeof(u.m_recv_over.over));
 				DWORD flags = 0;
-				WSARecv(u->m_socket, &u->m_recv_over.wsabuf, 1, NULL, &flags, &u->m_recv_over.over, NULL);
+				WSARecv(u.m_socket, &u.m_recv_over.wsabuf, 1, NULL, &flags, &u.m_recv_over.over, NULL);
 			}
 			break;
 		}
@@ -129,7 +191,14 @@ void worker_thread()
 				Player& nc = reinterpret_cast<Player&>(clients[user_id]);
 
 				nc.m_socket = c_socket;
-				nc.m_recv_over.Init();
+				nc.x = 0;
+				nc.y = 0;
+				nc.m_prev_size = 0;
+				nc.m_recv_over.op = OP_RECV;
+				ZeroMemory(&nc.m_recv_over.over, sizeof(nc.m_recv_over.over));
+				ZeroMemory(&nc.m_recv_over.io_buf, sizeof(nc.m_recv_over.io_buf));
+				nc.m_recv_over.wsabuf.buf = nc.m_recv_over.io_buf;
+				nc.m_recv_over.wsabuf.len= MAX_BUF_SIZE;
 
 				cout << "nc socket:" << nc.m_socket << endl;
 				DWORD flags = 0;

@@ -73,5 +73,6 @@ public:
 	void KeyboardInput();
 
 	void NetTest();
+	void TestPing();
 };
 
