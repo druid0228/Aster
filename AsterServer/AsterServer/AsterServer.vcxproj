@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="BaseObject.cpp" />
     <ClCompile Include="ExoverManager.cpp" />
+    <ClCompile Include="Headers.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>

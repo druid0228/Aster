@@ -35,15 +35,29 @@ void initialize_clients()
 	cout << " --initialize user\n";
 }
 
-void send_packet(int id, Packet* p)
+void send_packet(int user_id, Packet* p)
 {
+	Player* u = reinterpret_cast<Player*>(clients[user_id]);
+	char* buf = reinterpret_cast<char*>(p);
 
-	
+	EXOVER* exover = over_manager.get();
+	exover->Init(OP_SEND, buf[0]);
+	memcpy(exover->io_buf, buf, buf[0]);
+	WSASend(u->m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
 void send_packet_login()
 {
 
+}
+
+void disconnect(int user_id)
+{
+	//send_leave_packet()
+	Player* u = reinterpret_cast<Player*>(clients[user_id]);
+	u->m_clStatus = CL_STATUS::CS_FREE;
+	closesocket(u->m_socket);
+	cout << "disconnect:" << user_id << "\n";
 }
 
 inline void accept_async()
@@ -69,14 +83,26 @@ void worker_thread()
 		EXOVER* exover = reinterpret_cast<EXOVER*>(over);
 		int user_id = static_cast<int>(key);
 
+		Player* u = reinterpret_cast<Player*>(clients[user_id]);
+
 		switch (exover->op)
 		{
 		case OP_RECV:
 		{
+			if (io_byte == 0)disconnect(user_id);
+			else
+			{
+
+				ZeroMemory(&u->m_recv_over.over, sizeof(u->m_recv_over.over));
+				DWORD flags = 0;
+				WSARecv(u->m_socket, &u->m_recv_over.wsabuf, 1, NULL, &flags, &u->m_recv_over.over, NULL);
+			}
 			break;
 		}
 		case OP_SEND:
 		{
+			if (io_byte == 0)disconnect(user_id);
+			over_manager.release(exover);
 			break;
 		}
 		case OP_ACCEPT:
@@ -102,10 +128,12 @@ void worker_thread()
 				CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), g_iocp, user_id, 0);
 				Player& nc = reinterpret_cast<Player&>(clients[user_id]);
 
-				nc.socket = c_socket;
+				nc.m_socket = c_socket;
+				nc.m_recv_over.Init();
 
-				cout << "nc socket:" << nc.socket << endl;
-				//WSARecv(c_socket)
+				cout << "nc socket:" << nc.m_socket << endl;
+				DWORD flags = 0;
+				WSARecv(nc.m_socket, &nc.m_recv_over.wsabuf, 1, NULL, &flags, &nc.m_recv_over.over, NULL);
 				cout << "user_id: " << user_id << endl;
 			}
 			accept_async();

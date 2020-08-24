@@ -45,6 +45,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Objects\Player</Filter>
     </ClCompile>
+    <ClCompile Include="Headers.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers.h">

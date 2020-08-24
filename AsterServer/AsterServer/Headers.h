@@ -47,6 +47,12 @@ struct EXOVER {
 		WSABUF wsabuf;
 		SOCKET c_socket;
 	};
+	inline void Init(OVEROP _op = OP_RECV,int buflen = MAX_BUF_SIZE) {
+		ZeroMemory(&over, sizeof(over));
+		wsabuf.buf = io_buf;
+		wsabuf.len = buflen;
+		op = _op;
+	}
 };
 
 
