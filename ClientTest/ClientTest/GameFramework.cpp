@@ -77,12 +77,12 @@ void GameFramework::Network()
 		std::cout << "sf::Socket::Disconnected\n";
 	}
 
-
 	if (ret == sf::Socket::Done || ret == sf::Socket::Partial)
 	{
-		std::cout << "received:" << received << "\n";
+		if (received > 0) {
+			Packet_assembler(data, received);
+		}
 	}
-	
 }
 
 void GameFramework::WindowEvent()
@@ -134,21 +134,10 @@ void GameFramework::KeyboardInput()
 	{
 		sf_view.zoom(0.9);
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-	{
-		NetTest();
-	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 	{
 		TestPing();
 	}
-}
-
-void GameFramework::NetTest()
-{
-	std::cout << "NetTest\n";
-	
-
 }
 
 void GameFramework::TestPing()
@@ -159,5 +148,73 @@ void GameFramework::TestPing()
 	char* packet = reinterpret_cast<char*>(&p);
 	size_t sent;
 	sf_socket.send(packet, packet[0], sent);
+}
+
+void GameFramework::ProcessPacket(char* packet)
+{
+	switch (packet[1])
+	{
+	case ps2c_login:
+	{
+		std::cout << "ps2c_login\n";
+		break;
+	}
+	case ps2c_disconnect:
+	{
+		std::cout << "ps2c_disconnect\n";
+		break;
+	}
+	case ps2c_enter:
+	{
+		std::cout << "ps2c_enter\n";
+		break;
+	}
+	case ps2c_move:
+	{
+		std::cout << "ps2c_move\n";
+		break;
+	}
+	case ps2c_attack:
+	{
+		std::cout << "ps2c_attack\n";
+		break;
+	}
+	default:
+		std::cout << "default\n";
+		break;
+	}
+}
+
+void GameFramework::Packet_assembler(char* data, size_t io_byte)
+{
+	char* p = data;
+	static char packet_buffer[MAX_BUF_SIZE];
+	static size_t m_prev_size = 0;
+	static size_t packet_size = 0;
+
+	std::cout << "io_byte:" << io_byte << "\n";
+
+	while (io_byte > 0)
+	{
+		if (packet_size == 0) packet_size = p[0];
+		std::cout << "size:" << packet_size << "\n";
+		if (io_byte + m_prev_size >= packet_size)
+		{
+			size_t diff = packet_size - m_prev_size;
+			std::cout << "diff:" << diff << "\n";
+			memcpy(packet_buffer + m_prev_size, p, diff);
+			ProcessPacket(packet_buffer);
+			p += diff;
+			io_byte -= diff;
+			packet_size = 0;
+			m_prev_size = 0;
+		}
+		else 
+		{
+			memcpy(packet_buffer + m_prev_size, p, io_byte);
+			m_prev_size += io_byte;
+			io_byte = 0;
+		}
+	}
 }
 

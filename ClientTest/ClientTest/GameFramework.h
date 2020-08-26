@@ -69,10 +69,11 @@ public:
 	void Draw();
 	void Network();
 	void WindowEvent();
-	
 	void KeyboardInput();
 
-	void NetTest();
 	void TestPing();
+
+	void ProcessPacket(char* packet);
+	void Packet_assembler(char* data,size_t io_byte);
 };
 

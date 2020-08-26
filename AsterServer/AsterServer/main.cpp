@@ -47,9 +47,14 @@ void send_packet(int user_id, void* p)
 	WSASend(u.m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
-void send_packet_login()
+void send_packet_login(int user_id)
 {
-
+	Player& u = reinterpret_cast<Player&>(clients[user_id]);
+	sc_packet_login p;
+	p.x = u.x;
+	p.y = u.y;
+	
+	send_packet(user_id, &p);
 }
 
 void send_none_packet(int user_id)
@@ -193,10 +198,12 @@ void worker_thread()
 				Player& nc = reinterpret_cast<Player&>(clients[user_id]);
 
 				nc.m_socket = c_socket;
-				nc.x = 0;
-				nc.y = 0;
+				nc.x = rand()%WORLD_WIDTH;
+				nc.y = rand()%WORLD_HEIGHT;
 				nc.m_prev_size = 0;
 				nc.m_recv_over.init();
+
+				send_packet_login(user_id);
 
 				cout << "nc socket:" << nc.m_socket << endl;
 				DWORD flags = 0;

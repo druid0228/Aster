@@ -9,3 +9,6 @@ constexpr int CLIENTWIDHT = 1000;
 constexpr int CLIENTHEIGHT = 1000;
 
 constexpr int MAX_BUF_SIZE = 255;
+
+constexpr auto WORLD_WIDTH = 100;
+constexpr auto WORLD_HEIGHT = 100;

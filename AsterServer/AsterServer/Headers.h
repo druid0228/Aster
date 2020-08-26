@@ -17,6 +17,11 @@ using namespace std;
 constexpr auto THREAD_NUM = 4;
 constexpr auto MAX_BUF_SIZE = 1024;
 constexpr auto MAX_PACKET_SIZE = 255;
+//----------------------------------------------------------------
+constexpr auto WORLD_WIDTH = 100;
+constexpr auto WORLD_HEIGHT = 100;
+
+
 
 //----------------------------------------------------------------
 constexpr auto MAX_OBJECT = 10;
