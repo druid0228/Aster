@@ -37,13 +37,14 @@ void initialize_clients()
 
 void send_packet(int user_id, void* p)
 {
-	Player* u = reinterpret_cast<Player*>(clients[user_id]);
+	Player& u = reinterpret_cast<Player&>(clients[user_id]);
 	char* buf = reinterpret_cast<char*>(p);
 
 	EXOVER* exover = over_manager.get();
-	//exover->Init(OP_SEND, buf[0]);
+	exover->init(OP_SEND, buf[0]);
+
 	memcpy(exover->io_buf, buf, buf[0]);
-	WSASend(u->m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
+	WSASend(u.m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
 void send_packet_login()
@@ -59,8 +60,7 @@ void send_none_packet(int user_id)
 
 void test_ping(int user_id)
 {
-	cout << "send test[" << user_id << "]\n";
-	//send_none_packet(user_id);
+	send_none_packet(user_id);
 }
 
 void packet_process(int user_id, char* _packet)
@@ -69,6 +69,7 @@ void packet_process(int user_id, char* _packet)
 	{
 	case pc2s_none:
 	{
+		cout << "pc2s_none\n";
 		cs_packet_none* packet = reinterpret_cast<cs_packet_none*>(_packet);
 		test_ping(user_id);
 		break;
@@ -164,6 +165,7 @@ void worker_thread()
 		case OP_SEND:
 		{
 			if (io_byte == 0)disconnect(user_id);
+			cout << "OP_SEND[" << user_id << "]\n";
 			over_manager.release(exover);
 			break;
 		}
@@ -194,11 +196,7 @@ void worker_thread()
 				nc.x = 0;
 				nc.y = 0;
 				nc.m_prev_size = 0;
-				nc.m_recv_over.op = OP_RECV;
-				ZeroMemory(&nc.m_recv_over.over, sizeof(nc.m_recv_over.over));
-				ZeroMemory(&nc.m_recv_over.io_buf, sizeof(nc.m_recv_over.io_buf));
-				nc.m_recv_over.wsabuf.buf = nc.m_recv_over.io_buf;
-				nc.m_recv_over.wsabuf.len= MAX_BUF_SIZE;
+				nc.m_recv_over.init();
 
 				cout << "nc socket:" << nc.m_socket << endl;
 				DWORD flags = 0;

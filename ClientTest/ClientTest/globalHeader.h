@@ -7,3 +7,5 @@
 
 constexpr int CLIENTWIDHT = 1000;
 constexpr int CLIENTHEIGHT = 1000;
+
+constexpr int MAX_BUF_SIZE = 255;

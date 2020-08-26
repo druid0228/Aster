@@ -5,12 +5,17 @@ void GameFramework::Initialize()
 {
 	sf::err().rdbuf(NULL);
 	sf_window.create(sf::VideoMode(CLIENTWIDHT, CLIENTHEIGHT), "Aster");
+
+	sf_socket.connect("127.0.0.1", 9000);
+	sf_socket.setBlocking(false);
+
 	sf_window.setView(sf_view);
 	sf_view.setCenter(400, 200);
 	sf_view.zoom(0.5);
 
 	m_ground.Initialize();
 	m_object.Initialize();
+
 
 	std::cout << "Initialize\n";
 }
@@ -26,6 +31,7 @@ int GameFramework::Run()
 	while (sf_window.isOpen())
 	{
 		WindowEvent();
+		Network();
 		Update();
 		Draw();
 	}
@@ -54,6 +60,29 @@ void GameFramework::Draw()
 
 	//
 	sf_window.display();
+}
+
+void GameFramework::Network()
+{
+	char data[MAX_BUF_SIZE];
+	size_t received;
+	sf::Socket::Status ret = sf_socket.receive(data, MAX_BUF_SIZE, received);
+
+	if (ret == sf::Socket::Error)
+	{
+		std::cout << "sf::Socket::Error\n";
+	}
+	if (ret == sf::Socket::Disconnected)
+	{
+		std::cout << "sf::Socket::Disconnected\n";
+	}
+
+
+	if (ret == sf::Socket::Done || ret == sf::Socket::Partial)
+	{
+		std::cout << "received:" << received << "\n";
+	}
+	
 }
 
 void GameFramework::WindowEvent()
@@ -118,7 +147,7 @@ void GameFramework::KeyboardInput()
 void GameFramework::NetTest()
 {
 	std::cout << "NetTest\n";
-	socket.connect("127.0.0.1", 9000);
+	
 
 }
 
@@ -128,8 +157,7 @@ void GameFramework::TestPing()
 	cs_packet_none p;
 
 	char* packet = reinterpret_cast<char*>(&p);
-	std::cout << "p[0]:" <<(int) packet[0] <<" "<<(int)packet[1]<< "\n";
 	size_t sent;
-	socket.send(packet, packet[0], sent);
+	sf_socket.send(packet, packet[0], sent);
 }
 

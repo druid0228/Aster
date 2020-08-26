@@ -56,7 +56,7 @@ class GameFramework
 	sf::RenderWindow sf_window;
 	sf::View sf_view;
 
-	sf::TcpSocket socket;
+	sf::TcpSocket sf_socket;
 
 	Ground m_ground;
 	Object m_object;
