@@ -53,7 +53,8 @@ void send_packet_login(int user_id)
 	sc_packet_login p;
 	p.x = u.x;
 	p.y = u.y;
-	
+	cout << "send_packet_login (" << p.x << "," << p.y << ")\n";
+
 	send_packet(user_id, &p);
 }
 

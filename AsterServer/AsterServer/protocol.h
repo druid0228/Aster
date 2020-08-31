@@ -14,7 +14,7 @@ enum {
 #pragma pack(push,1)
 struct Packet
 {
-	int	 size;
+	char size;
 	char type;
 };
 
