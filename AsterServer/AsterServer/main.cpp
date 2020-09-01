@@ -8,6 +8,7 @@ SOCKET l_socket;
 ExoverManager over_manager;
 
 BaseObject* clients[MAX_CLEINTS];
+inline Player& player_cast(int user_id) { return reinterpret_cast<Player&>(*clients[user_id]);}
 
 void initialize_clients() 
 {
@@ -37,7 +38,7 @@ void initialize_clients()
 
 void send_packet(int user_id, void* p)
 {
-	Player& u = reinterpret_cast<Player&>(clients[user_id]);
+	Player& u = player_cast(user_id);;
 	char* buf = reinterpret_cast<char*>(p);
 
 	EXOVER* exover = over_manager.get();
@@ -47,20 +48,27 @@ void send_packet(int user_id, void* p)
 	WSASend(u.m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
-void send_packet_login(int user_id)
-{
-	Player& u = reinterpret_cast<Player&>(clients[user_id]);
-	sc_packet_login p;
-	p.x = u.x;
-	p.y = u.y;
-	cout << "send_packet_login (" << p.x << "," << p.y << ")\n";
-
-	send_packet(user_id, &p);
-}
-
 void send_none_packet(int user_id)
 {
 	sc_packet_none p;
+	send_packet(user_id, &p);
+}
+
+void send_packet_login(int user_id)
+{
+	Player& u = player_cast(user_id);;
+	sc_packet_login p;
+	p.x = u.x;
+	p.y = u.y;
+	send_packet(user_id, &p);
+}
+
+void send_packet_move(int user_id)
+{
+	Player& u = player_cast(user_id);
+	sc_packet_move p;
+	p.x = u.x;
+	p.y = u.y;
 	send_packet(user_id, &p);
 }
 
@@ -69,16 +77,49 @@ void test_ping(int user_id)
 	send_none_packet(user_id);
 }
 
+void move_process(int user_id, cs_packet_move* _packet)
+{
+	cs_packet_move packet = *_packet;
+	Player& u = player_cast(user_id);;
+	// 이동 불가 체크
+
+	//
+	if (packet.dir == dir_left)
+	{
+		u.x -= u.speed;
+	}
+	else if (packet.dir == dir_right)
+	{
+		u.x += u.speed;
+	}
+
+	if (packet.dir == dir_up)
+	{
+		u.y -= u.speed;
+	}
+	else if (packet.dir == dir_down)
+	{
+		u.y += u.speed;
+	}
+
+	send_packet_move(user_id);
+}
+
 void packet_process(int user_id, char* _packet)
 {
 	switch (_packet[1])
 	{
 	case pc2s_none:
 	{
-		cout << "pc2s_none\n";
 		cs_packet_none* packet = reinterpret_cast<cs_packet_none*>(_packet);
 		test_ping(user_id);
 		break;
+	}
+	case pc2s_move:
+	{
+		cs_packet_move* packet = reinterpret_cast<cs_packet_move*>(_packet);
+		move_process(user_id, packet);
+
 	}
 	default:
 		break;
@@ -87,7 +128,7 @@ void packet_process(int user_id, char* _packet)
 
 void packet_assembly(int user_id,int io_byte)
 {
-	Player& u = reinterpret_cast<Player&>(clients[user_id]);
+	Player& u = player_cast(user_id);;
 	EXOVER& r_o = u.m_recv_over;
 
 	char* p = r_o.io_buf;
@@ -121,9 +162,9 @@ void packet_assembly(int user_id,int io_byte)
 void disconnect(int user_id)
 {
 	//send_leave_packet()
-	Player* u = reinterpret_cast<Player*>(clients[user_id]);
-	u->m_clStatus = CL_STATUS::CS_FREE;
-	closesocket(u->m_socket);
+	Player& u = player_cast(user_id);
+	u.m_clStatus = CL_STATUS::CS_FREE;
+	closesocket(u.m_socket);
 	cout << "disconnect:" << user_id << "\n";
 }
 
@@ -150,7 +191,7 @@ void worker_thread()
 		EXOVER* exover = reinterpret_cast<EXOVER*>(over);
 		int user_id = static_cast<int>(key);
 
-		Player& u = reinterpret_cast<Player&>(clients[user_id]);
+		Player& u = reinterpret_cast<Player&>(*clients[user_id]);
 
 		switch (exover->op)
 		{
@@ -159,7 +200,6 @@ void worker_thread()
 			if (io_byte == 0)disconnect(user_id);
 			else
 			{
-				cout << "OP_RECV[" << user_id << "]\n";
 				packet_assembly(user_id,io_byte);
 
 				ZeroMemory(&u.m_recv_over.over, sizeof(u.m_recv_over.over));
@@ -171,7 +211,6 @@ void worker_thread()
 		case OP_SEND:
 		{
 			if (io_byte == 0)disconnect(user_id);
-			cout << "OP_SEND[" << user_id << "]\n";
 			over_manager.release(exover);
 			break;
 		}
@@ -196,24 +235,15 @@ void worker_thread()
 			else
 			{
 				CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), g_iocp, user_id, 0);
-				Player& nc = reinterpret_cast<Player&>(clients[user_id]);
-
+				Player& nc = player_cast(user_id);
 				nc.m_socket = c_socket;
-				nc.x = rand()%WORLD_WIDTH;
-				nc.y = rand()%WORLD_HEIGHT;
-				nc.m_prev_size = 0;
-				nc.m_recv_over.init();
 
 				send_packet_login(user_id);
-
-				cout << "nc socket:" << nc.m_socket << endl;
+				cout << "Accept[" << user_id << "]\n";
 				DWORD flags = 0;
 				WSARecv(nc.m_socket, &nc.m_recv_over.wsabuf, 1, NULL, &flags, &nc.m_recv_over.over, NULL);
-				cout << "user_id: " << user_id << endl;
 			}
 			accept_async();
-
-			cout << "ACCEPT\n";
 			break;
 		}
 		default:

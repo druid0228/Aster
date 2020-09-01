@@ -21,8 +21,6 @@ constexpr auto MAX_PACKET_SIZE = 255;
 constexpr auto WORLD_WIDTH = 100;
 constexpr auto WORLD_HEIGHT = 100;
 
-
-
 //----------------------------------------------------------------
 constexpr auto MAX_OBJECT = 10;
 constexpr auto OBJECT_BEGIN = 0;

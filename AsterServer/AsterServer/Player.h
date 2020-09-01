@@ -11,7 +11,7 @@ public:
 
 public:
 	int x, y; // FOR TEST
-
+	int speed;
 
 public:
 	virtual void initialize()override;

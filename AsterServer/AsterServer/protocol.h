@@ -9,6 +9,15 @@ enum {
 
 enum {
 	pc2s_none,
+	pc2s_move
+};
+
+enum {
+	dir_none = 0,
+	dir_left = 1,
+	dir_right = 2,
+	dir_up = 4,
+	dir_down = 8,
 };
 
 #pragma pack(push,1)
@@ -38,15 +47,12 @@ struct loginPacket : Packet
 struct disconnectPacket : Packet
 {
 	disconnectPacket() { size = sizeof(disconnectPacket), type = ps2c_disconnect; }
-
-
 };
 
 // Server to Client Packet
 struct sc_packet_none : Packet
 {
 	sc_packet_none() { size = sizeof(sc_packet_none), type = ps2c_none; }
-
 };
 
 struct sc_packet_login : Packet
@@ -55,11 +61,23 @@ struct sc_packet_login : Packet
 	int x, y;
 };
 
+struct sc_packet_move : Packet
+{
+	sc_packet_move() { size = sizeof(sc_packet_move), type = ps2c_move; }
+	int x, y;
+};
+
 
 // Client to Server Packet
 struct cs_packet_none : Packet
 {
 	cs_packet_none() { size = sizeof(cs_packet_none), type = pc2s_none; }
+};
+
+struct cs_packet_move : Packet
+{
+	cs_packet_move() { size = sizeof(cs_packet_move), type = pc2s_move; }
+	char dir;
 };
 
 #pragma pack(pop)

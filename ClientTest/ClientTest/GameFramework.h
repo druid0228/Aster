@@ -10,8 +10,9 @@ public:
 		m_texture.loadFromFile("testBackground.jpg");
 		m_sprite.setTexture(m_texture);
 	}
-	void Draw(sf::RenderWindow& window)
+	void Draw(sf::RenderWindow& window, sf::Vector2f v)
 	{
+		m_sprite.setPosition(v);
 		window.draw(m_sprite);
 	}
 };
@@ -59,7 +60,7 @@ class GameFramework
 	sf::TcpSocket sf_socket;
 
 	Ground m_ground;
-	Object m_object;
+	Object m_player;
 public:
 	void Initialize();
 	void Destroy();
@@ -71,9 +72,16 @@ public:
 	void WindowEvent();
 	void KeyboardInput();
 
+public:
+	void MoveInput();
+
 	void TestPing();
 
+public:
+	size_t Send(void* _packet);
 	void ProcessPacket(char* packet);
 	void Packet_assembler(char* data,size_t io_byte);
+	void LoginProcess(sc_packet_login* packet);
+	void MoveProcess(sc_packet_move* packet);
 };
 
