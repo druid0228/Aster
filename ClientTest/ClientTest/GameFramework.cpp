@@ -13,9 +13,10 @@ void GameFramework::Initialize()
 	sf_view.setCenter(400, 200);
 	sf_view.zoom(0.5);
 
-	m_ground.Initialize();
-	m_player.Initialize();
+	gid = 0;
 
+	m_ground.Initialize();
+	m_player.Initialize(gid++);
 
 	std::cout << "Initialize\n";
 }
@@ -46,6 +47,8 @@ void GameFramework::Update()
 	if (cnt++ >= 60)
 	{
 		m_player.Update();
+		if (m_others.size())
+			for (auto ot : m_others) ot.Update();
 		cnt = 0;
 	}
 }
@@ -56,6 +59,13 @@ void GameFramework::Draw()
 	sf_window.setView(sf_view);
 	// Draw Here
 	m_ground.Draw(sf_window, sf::Vector2f(-m_player.x, -m_player.y));
+	if (m_others.size())
+	{
+		for (auto ot : m_others)
+		{
+			ot.Draw(sf_window);
+		}
+	}
 	m_player.Draw(sf_window);
 
 	//
@@ -118,6 +128,15 @@ void GameFramework::KeyboardInput()
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
 	{
 		TestPing();
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
+	{
+		Object n;
+		n.Initialize(gid++);
+		n.x += m_player.x + 10;
+		n.y += m_player.y + 10;
+		m_others.emplace_back(n);
+
 	}
 }
 

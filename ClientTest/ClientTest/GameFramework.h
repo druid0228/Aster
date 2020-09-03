@@ -20,13 +20,15 @@ public:
 class Object
 {
 public:
+	int id;
 	int x, y;
 	int sp_x, sp_y;
 	const int size = 16;
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
-	void Initialize()
+	void Initialize(int _id)
 	{
+		id = _id;
 		sp_x = 10;
 		sp_y = 10;
 		m_texture.loadFromFile("hero.png");
@@ -50,6 +52,9 @@ public:
 		m_sprite.setPosition(400,200);
 		window.draw(m_sprite);
 	}
+
+	bool operator==(const Object& rhs) const{ return id == rhs.id; }
+	
 };
 
 class GameFramework
@@ -61,6 +66,9 @@ class GameFramework
 
 	Ground m_ground;
 	Object m_player;
+	vector<Object> m_others;
+
+	int gid;
 public:
 	void Initialize();
 	void Destroy();

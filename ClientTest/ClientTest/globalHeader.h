@@ -5,6 +5,11 @@
 #include<SFML/Network.hpp>
 #include"../../AsterServer/AsterServer/protocol.h"
 
+#include<vector>
+#include<unordered_set>
+
+using namespace std;
+
 constexpr int CLIENTWIDHT = 1000;
 constexpr int CLIENTHEIGHT = 1000;
 
