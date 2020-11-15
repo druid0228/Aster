@@ -61,6 +61,13 @@ struct sc_packet_login : Packet
 	int x, y;
 };
 
+struct sc_packet_enter : Packet
+{
+	sc_packet_enter() { size = sizeof(sc_packet_enter), type = ps2c_enter; }
+	int id;
+	int x, y;
+};
+
 struct sc_packet_move : Packet
 {
 	sc_packet_move() { size = sizeof(sc_packet_move), type = ps2c_move; }

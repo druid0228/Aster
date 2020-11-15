@@ -72,6 +72,11 @@ void send_packet_move(int user_id)
 	send_packet(user_id, &p);
 }
 
+void enter_player(int user_id)
+{
+	
+}
+
 void test_ping(int user_id)
 {
 	send_none_packet(user_id);
