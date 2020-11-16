@@ -72,9 +72,33 @@ void send_packet_move(int user_id)
 	send_packet(user_id, &p);
 }
 
-void enter_player(int user_id)
+void send_packet_enter(int user_id,int entrant_id)
 {
-	
+	Player& u = player_cast(user_id);
+	Player& ent = player_cast(entrant_id);
+	sc_packet_enter p;
+	p.id = entrant_id;
+	p.x = ent.x;
+	p.y = ent.y;
+	send_packet(user_id, &p);
+}
+
+inline void enterWorld_player(int user_id)
+{
+	// Searching near clinets
+	// Temporary skip
+	for (int i = USER_BEGIN; i < USER_END; ++i)
+	{
+		if (i != user_id)
+		{
+			Player& u = player_cast(i);
+			if (u.m_clStatus != CL_STATUS::CS_ACTIVE)continue;
+			send_packet_enter(i, user_id);
+			send_packet_enter(user_id, i);
+		}
+	}
+
+	// clientStatus를 어디서 볼까
 }
 
 void test_ping(int user_id)
@@ -245,6 +269,9 @@ void worker_thread()
 
 				send_packet_login(user_id);
 				cout << "Accept[" << user_id << "]\n";
+
+				enterWorld_player(user_id);
+
 				DWORD flags = 0;
 				WSARecv(nc.m_socket, &nc.m_recv_over.wsabuf, 1, NULL, &flags, &nc.m_recv_over.over, NULL);
 			}

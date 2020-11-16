@@ -66,7 +66,8 @@ class GameFramework
 
 	Ground m_ground;
 	Object m_player;
-	vector<Object> m_others;
+	//vector<Object> m_others;
+	unordered_map<int,Object> m_others;
 
 	int gid;
 public:
@@ -85,11 +86,12 @@ public:
 
 	void TestPing();
 
-public:
+private:
 	size_t Send(void* _packet);
 	void ProcessPacket(char* packet);
 	void Packet_assembler(char* data,size_t io_byte);
 	void LoginProcess(sc_packet_login* packet);
 	void MoveProcess(sc_packet_move* packet);
+	void EnterProcess(sc_packet_enter* packet);
 };
 

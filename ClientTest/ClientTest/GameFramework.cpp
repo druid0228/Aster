@@ -48,7 +48,7 @@ void GameFramework::Update()
 	{
 		m_player.Update();
 		if (m_others.size())
-			for (auto ot : m_others) ot.Update();
+			for (auto ot : m_others) ot.second.Update();
 		cnt = 0;
 	}
 }
@@ -63,7 +63,7 @@ void GameFramework::Draw()
 	{
 		for (auto ot : m_others)
 		{
-			ot.Draw(sf_window);
+			ot.second.Draw(sf_window);
 		}
 	}
 	m_player.Draw(sf_window);
@@ -131,11 +131,11 @@ void GameFramework::KeyboardInput()
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
 	{
-		Object n;
+		/*Object n;
 		n.Initialize(gid++);
 		n.x += m_player.x + 10;
 		n.y += m_player.y + 10;
-		m_others.emplace_back(n);
+		m_others.emplace_back(n);*/
 
 	}
 }
@@ -162,6 +162,18 @@ void GameFramework::MoveProcess(sc_packet_move* _packet)
 	sc_packet_move packet = *_packet;
 	m_player.x = packet.x;
 	m_player.y = packet.y;
+}
+
+void GameFramework::EnterProcess(sc_packet_enter* _packet)
+{
+	sc_packet_enter packet = *_packet;
+	Object oth;
+	oth.id = packet.id;
+	oth.Initialize(oth.id);
+	oth.x = packet.x;
+	oth.y = packet.y;
+	cout << oth.id << " " << oth.x << " " << oth.y << "\n";
+	m_others.insert(make_pair(oth.id, oth));
 }
 
 void GameFramework::TestPing()
@@ -197,6 +209,8 @@ void GameFramework::ProcessPacket(char* _packet)
 	}
 	case ps2c_enter:
 	{
+		sc_packet_enter* packet = reinterpret_cast<sc_packet_enter*>(_packet);
+		EnterProcess(packet);
 		std::cout << "ps2c_enter\n";
 		break;
 	}
