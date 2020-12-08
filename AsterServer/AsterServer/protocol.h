@@ -3,13 +3,16 @@
 
 enum {
 	ps2c_none,
-	ps2c_login, ps2c_disconnect, ps2c_enter,
+	ps2c_login, ps2c_disconnect, 
+	ps2c_enter, ps2c_leave,
+	ps2c_monsterPut,
 	ps2c_move, ps2c_attack
 };
 
 enum {
 	pc2s_none,
-	pc2s_move
+	pc2s_move,
+	pc2s_attack
 };
 
 enum {
@@ -68,6 +71,20 @@ struct sc_packet_enter : Packet
 	int x, y;
 };
 
+struct sc_packet_leave : Packet
+{
+	sc_packet_leave() { size = sizeof(sc_packet_leave), type = ps2c_leave; }
+	int id;
+};
+
+struct sc_packet_monsterPut : Packet
+{
+	sc_packet_monsterPut() { size = sizeof(sc_packet_monsterPut), 
+		type = ps2c_monsterPut; }
+	int id;
+	int x, y;
+};
+
 struct sc_packet_move : Packet
 {
 	sc_packet_move() { size = sizeof(sc_packet_move), type = ps2c_move; }
@@ -85,6 +102,12 @@ struct cs_packet_move : Packet
 {
 	cs_packet_move() { size = sizeof(cs_packet_move), type = pc2s_move; }
 	char dir;
+};
+
+struct cs_packet_attack : Packet
+{
+	cs_packet_attack() { size = sizeof(cs_packet_attack), type = pc2s_attack; }
+
 };
 
 #pragma pack(pop)

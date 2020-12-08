@@ -3,6 +3,7 @@
 class BaseObject
 {
 public:
+	int m_id;
 	atomic<CL_STATUS> m_clStatus;
 
 public:

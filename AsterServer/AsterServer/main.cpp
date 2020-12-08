@@ -9,33 +9,65 @@ ExoverManager over_manager;
 
 BaseObject* clients[MAX_CLEINTS];
 inline Player& player_cast(int user_id) { return reinterpret_cast<Player&>(*clients[user_id]);}
+inline Monster& monster_cast(int user_id) { return reinterpret_cast<Monster&>(*clients[user_id]); }
+
+inline void nearby_monster(int user_id)
+{
+	Player& u = player_cast(user_id);
+	int u_x = u.x;
+	int u_y = u.y;
+
+	// 나중에 Sector로 find 이건 임시
+	for (int i = MONSTER_BEGIN; i < MONSTER_END; ++i)
+	{
+		Monster& monster = monster_cast(i);
+		int m_x = monster.x;
+		int m_y = monster.y;
+		//find
+		if (VIEW_RANGE < abs(u_x - m_x))continue;
+		if (VIEW_RANGE < abs(u_y - m_y))continue;
+
+		monster.m_clStatus = CL_STATUS::CS_ACTIVE;
+
+
+	}
+}
 
 void initialize_clients() 
 {
 	cout << "initialize_clients\n";
 	for (int i = OBJECT_BEGIN; i < OBJECT_END; ++i)
 	{
-		// initilize_object
 		clients[i] = new BaseObject;
+		clients[i]->m_id = i;
 		clients[i]->initialize();
 	}
-	cout << " --initialize objects\n";
+	cout << " --initialize objects:"<< OBJECT_END - OBJECT_BEGIN << "\n";
 	for (int i = NPC_BEGIN; i < NPC_END; ++i)
 	{
-		// initilize_npc
 		clients[i] = new BaseObject;
+		clients[i]->m_id = i;
 		clients[i]->initialize();
 	}
-	cout << " --initialize npc\n";
+	cout << " --initialize npc:" << NPC_END - NPC_BEGIN<< "\n";
+	for (int i = MONSTER_BEGIN; i < MONSTER_END; ++i)
+	{
+		clients[i] = new Monster;
+		clients[i]->m_id = i;
+		clients[i]->initialize();
+	}
+	cout << " --initialize monster:" << MONSTER_END - MONSTER_BEGIN << "\n";
 	for (int i = USER_BEGIN; i < USER_END; ++i)
 	{
-		// initilize_clients
 		clients[i] = new Player;
+		clients[i]->m_id = i;
 		clients[i]->initialize();
 	}
-	cout << " --initialize user\n";
+	cout << " --initialize user:" << USER_END - USER_BEGIN << "\n";
 }
 
+//================================================================================================================================//
+// PACKET
 void send_packet(int user_id, void* p)
 {
 	Player& u = player_cast(user_id);;
@@ -48,7 +80,7 @@ void send_packet(int user_id, void* p)
 	WSASend(u.m_socket, &exover->wsabuf, 1, NULL, 0, &exover->over, NULL);
 }
 
-void send_none_packet(int user_id)
+void send_packet_none(int user_id)
 {
 	sc_packet_none p;
 	send_packet(user_id, &p);
@@ -56,7 +88,7 @@ void send_none_packet(int user_id)
 
 void send_packet_login(int user_id)
 {
-	Player& u = player_cast(user_id);;
+	Player& u = player_cast(user_id);
 	sc_packet_login p;
 	p.x = u.x;
 	p.y = u.y;
@@ -80,8 +112,22 @@ void send_packet_enter(int user_id,int entrant_id)
 	p.id = entrant_id;
 	p.x = ent.x;
 	p.y = ent.y;
+	u.view_insert(entrant_id);
+
 	send_packet(user_id, &p);
 }
+
+void send_packet_leave(int user_id, int leaver_id)
+{
+	Player& u = player_cast(user_id);
+	sc_packet_leave p;
+	p.id = leaver_id;
+	u.view_erase(leaver_id);
+
+	send_packet(user_id, &p);
+}
+
+//================================================================================================================================//
 
 inline void enterWorld_player(int user_id)
 {
@@ -103,7 +149,7 @@ inline void enterWorld_player(int user_id)
 
 void test_ping(int user_id)
 {
-	send_none_packet(user_id);
+	send_packet_none(user_id);
 }
 
 void move_process(int user_id, cs_packet_move* _packet)
@@ -112,7 +158,6 @@ void move_process(int user_id, cs_packet_move* _packet)
 	Player& u = player_cast(user_id);;
 	// 이동 불가 체크
 
-	//
 	if (packet.dir == dir_left)
 	{
 		u.x -= u.speed;
@@ -131,7 +176,13 @@ void move_process(int user_id, cs_packet_move* _packet)
 		u.y += u.speed;
 	}
 
+	// 임시 나중에 Sector 단위로
+	for (int i = USER_BEGIN; i < USER_END; ++i)
+	{
+
+	}
 	send_packet_move(user_id);
+
 }
 
 void packet_process(int user_id, char* _packet)
@@ -185,7 +236,6 @@ void packet_assembly(int user_id,int io_byte)
 			p += rest_byte;
 		}
 	}
-
 }
 
 void disconnect(int user_id)

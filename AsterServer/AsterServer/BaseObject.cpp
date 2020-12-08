@@ -2,7 +2,6 @@
 
 void BaseObject::initialize()
 {
-	cout << "BaseObject::initialize()\n";
 	m_clStatus = CL_STATUS::CS_FREE;
 }
 
