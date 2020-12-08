@@ -2,9 +2,7 @@
 class Monster : public BaseObject
 {
 public:
-	int x, y; // FOR TEST
 	int speed;
-
 public:
 	virtual void initialize()override;
 	virtual void destroy()override;

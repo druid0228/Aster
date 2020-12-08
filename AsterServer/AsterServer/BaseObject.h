@@ -5,7 +5,9 @@ class BaseObject
 public:
 	int m_id;
 	atomic<CL_STATUS> m_clStatus;
-
+public:
+	// all object has position
+	int x, y;
 public:
 	virtual void initialize();
 	virtual void destroy();

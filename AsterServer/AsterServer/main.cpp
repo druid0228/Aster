@@ -32,6 +32,13 @@ inline void nearby_monster(int user_id)
 
 	}
 }
+inline bool in_sight(int lid, int rid)
+{
+	BaseObject* lbo = clients[lid], * rbo = clients[rid];
+	if (abs(lbo->x - rbo->x) > VIEW_RANGE)return false;
+	if (abs(lbo->y - rbo->y) > VIEW_RANGE)return false;
+	return true;
+}
 
 void initialize_clients() 
 {
@@ -112,7 +119,10 @@ void send_packet_enter(int user_id,int entrant_id)
 	p.id = entrant_id;
 	p.x = ent.x;
 	p.y = ent.y;
-	u.view_insert(entrant_id);
+
+	u.m_mtx.lock();
+	u.m_viewlist.insert(entrant_id);
+	u.m_mtx.unlock();
 
 	send_packet(user_id, &p);
 }
@@ -122,7 +132,10 @@ void send_packet_leave(int user_id, int leaver_id)
 	Player& u = player_cast(user_id);
 	sc_packet_leave p;
 	p.id = leaver_id;
-	u.view_erase(leaver_id);
+
+	u.m_mtx.lock();
+	u.m_viewlist.erase(leaver_id);
+	u.m_mtx.unlock();
 
 	send_packet(user_id, &p);
 }
@@ -156,8 +169,9 @@ void move_process(int user_id, cs_packet_move* _packet)
 {
 	cs_packet_move packet = *_packet;
 	Player& u = player_cast(user_id);;
-	// 이동 불가 체크
+	// valid check
 
+	// calc movement
 	if (packet.dir == dir_left)
 	{
 		u.x -= u.speed;
@@ -166,7 +180,6 @@ void move_process(int user_id, cs_packet_move* _packet)
 	{
 		u.x += u.speed;
 	}
-
 	if (packet.dir == dir_up)
 	{
 		u.y -= u.speed;
@@ -176,13 +189,21 @@ void move_process(int user_id, cs_packet_move* _packet)
 		u.y += u.speed;
 	}
 
+	// viewlist
+	u.m_mtx.lock();
+	unordered_set<int> old_vlist = u.m_viewlist;
+	u.m_mtx.unlock();
+	unordered_set<int> new_vlist;
 	// 임시 나중에 Sector 단위로
 	for (int i = USER_BEGIN; i < USER_END; ++i)
 	{
-
+		Player& oth = player_cast(i);
+		if (oth.m_clStatus != CL_STATUS::CS_ACTIVE)continue;
+		if (in_sight(user_id, oth.m_id) == false)continue;
+		if (oth.m_id == user_id)continue;
+		new_vlist.insert(oth.m_id);
 	}
 	send_packet_move(user_id);
-
 }
 
 void packet_process(int user_id, char* _packet)

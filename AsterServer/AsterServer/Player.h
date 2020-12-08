@@ -13,11 +13,7 @@ public:
 	//
 	unordered_set<int> m_viewlist;
 	mutex m_mtx;
-	inline void view_insert(int id);
-	inline void view_erase(int id);
-
 public:
-	int x, y; // FOR TEST
 	int speed;
 
 public:
