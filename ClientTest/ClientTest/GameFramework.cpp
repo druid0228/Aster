@@ -160,8 +160,15 @@ void GameFramework::MoveInput()
 void GameFramework::MoveProcess(sc_packet_move* _packet)
 {
 	sc_packet_move packet = *_packet;
-	m_player.x = packet.x;
-	m_player.y = packet.y;
+	if (m_pid == packet.id) {
+		m_player.x = packet.x;
+		m_player.y = packet.y;
+	}
+	else {
+		m_others[packet.id].id = packet.id;
+		m_others[packet.id].x = packet.x;
+		m_others[packet.id].y = packet.y;
+	}
 }
 
 void GameFramework::EnterProcess(sc_packet_enter* _packet)
@@ -265,6 +272,7 @@ void GameFramework::LoginProcess(sc_packet_login* _packet)
 	sc_packet_login packet = *_packet;
 	m_player.x = packet.x;
 	m_player.y = packet.y;
+	m_pid = packet.id;
 	std::cout << "LoginProcess\n";
 	std::cout << " -pos:(" << m_player.x << "," << m_player.y << ")\n";
 }

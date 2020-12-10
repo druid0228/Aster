@@ -19,23 +19,37 @@ public:
 
 class Object
 {
-public:
-	int id;
-	int x, y;
 	int sp_x, sp_y;
 	const int size = 16;
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
+	bool initialized;
+public:
+	int id;
+	int x, y;
+
+
+	Object() : initialized(false)
+	{}
+
 	void Initialize(int _id)
 	{
 		id = _id;
 		sp_x = 10;
 		sp_y = 10;
-		m_texture.loadFromFile("hero.png");
+		bool success = m_texture.loadFromFile("hero.png");
+		if (false == success) {
+			cout << "Image loading failed!!\n";
+		}
 		m_sprite.setTexture(m_texture);
+		initialized = true;
 	}
 	void Update()
 	{
+		static int count = 0;
+
+		if (count++ < 20) return;
+		count = 0;
 		sp_x += 1;
 		if (sp_x > 2)
 		{
@@ -47,9 +61,12 @@ public:
 	}
 	void Draw(sf::RenderWindow& window)
 	{
+		if (false == initialized) {
+			Initialize(id);
+		}
 		m_sprite.setTextureRect(sf::IntRect(
 			sp_x * size, sp_y * size,  size, size));
-		m_sprite.setPosition(400,200);
+		m_sprite.setPosition(400 + x,200 + y);
 		window.draw(m_sprite);
 	}
 
@@ -68,6 +85,8 @@ class GameFramework
 	Object m_player;
 	//vector<Object> m_others;
 	unordered_map<int,Object> m_others;
+
+	int m_pid;
 
 	int gid;
 public:
