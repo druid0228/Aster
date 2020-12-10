@@ -61,6 +61,7 @@ struct sc_packet_none : Packet
 struct sc_packet_login : Packet
 {
 	sc_packet_login() { size = sizeof(sc_packet_login), type = ps2c_login; }
+	int id;
 	int x, y;
 };
 
@@ -89,6 +90,7 @@ struct sc_packet_move : Packet
 {
 	sc_packet_move() { size = sizeof(sc_packet_move), type = ps2c_move; }
 	int x, y;
+	int id;
 };
 
 

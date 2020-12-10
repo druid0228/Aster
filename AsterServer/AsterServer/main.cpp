@@ -99,15 +99,17 @@ void send_packet_login(int user_id)
 	sc_packet_login p;
 	p.x = u.x;
 	p.y = u.y;
+	p.id = user_id;
 	send_packet(user_id, &p);
 }
 
-void send_packet_move(int user_id)
+void send_packet_move(int user_id,int mover_id)
 {
-	Player& u = player_cast(user_id);
+	Player& u = player_cast(mover_id);
 	sc_packet_move p;
 	p.x = u.x;
 	p.y = u.y;
+	p.id = mover_id;
 	send_packet(user_id, &p);
 }
 
@@ -203,7 +205,20 @@ void move_process(int user_id, cs_packet_move* _packet)
 		if (oth.m_id == user_id)continue;
 		new_vlist.insert(oth.m_id);
 	}
-	send_packet_move(user_id);
+	send_packet_move(user_id, user_id);
+
+	// for test
+	for (int i = USER_BEGIN; i < USER_END; ++i)
+	{
+		if (i == user_id) {
+			cout << "user_id\n";
+			continue;
+		}
+		Player& p = player_cast(i);
+		if (p.m_clStatus != CL_STATUS::CS_ACTIVE)continue;
+		send_packet_move(i, user_id);
+	}
+
 }
 
 void packet_process(int user_id, char* _packet)

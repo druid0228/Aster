@@ -22,7 +22,7 @@ constexpr auto MAX_PACKET_SIZE = 255;
 //================================================================================================================================//
 constexpr auto WORLD_WIDTH = 100;
 constexpr auto WORLD_HEIGHT = 100;
-constexpr auto VIEW_RANGE = 7;
+constexpr auto VIEW_RANGE = 70;
 
 //================================================================================================================================//
 constexpr auto MAX_OBJECT = 10;
