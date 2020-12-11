@@ -171,6 +171,7 @@ void GameFramework::MoveProcess(sc_packet_move* _packet)
 		m_player.x = packet.x;
 		m_player.y = packet.y;
 		cout << "MoveProcess player (" << packet.x << "," << packet.y << ")\n";
+
 	}
 }
 
