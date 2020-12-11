@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Timer">
+      <UniqueIdentifier>{21a82ae4-8037-4292-a4ca-4165ce25f5dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CoolTime">
+      <UniqueIdentifier>{495c3277-ee48-4b10-9b61-6e0933b648a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -20,6 +26,12 @@
     </ClCompile>
     <ClCompile Include="GameFramework.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="CoolTime.cpp">
+      <Filter>CoolTime</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +60,12 @@
     </ClInclude>
     <ClInclude Include="..\..\AsterServer\AsterServer\protocol.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="CoolTime.h">
+      <Filter>CoolTime</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

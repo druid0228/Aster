@@ -6,6 +6,7 @@
 #include"../../AsterServer/AsterServer/protocol.h"
 
 #include<vector>
+#include<queue>
 #include<unordered_set>
 #include<unordered_map>
 
@@ -18,3 +19,5 @@ constexpr int MAX_BUF_SIZE = 255;
 
 constexpr auto WORLD_WIDTH = 100;
 constexpr auto WORLD_HEIGHT = 100;
+
+constexpr auto VIEW_RANGE = 70;

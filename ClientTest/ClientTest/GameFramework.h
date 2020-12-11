@@ -66,6 +66,7 @@ class GameFramework
 
 	Ground m_ground;
 	Object m_player;
+	int m_pid;
 	//vector<Object> m_others;
 	unordered_map<int,Object> m_others;
 
