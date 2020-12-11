@@ -14,9 +14,20 @@ void GameFramework::Initialize()
 	sf_view.zoom(0.5);
 
 	gid = 0;
-
 	m_ground.Initialize();
 	m_player.Initialize(gid++);
+	Object dummy;
+	dummy.Initialize(gid++, "hero.png");
+	dummy.x = 10;
+	dummy.y = 10;
+
+	Object dummy2;
+	dummy2.Initialize(gid++,"hero.png");
+	dummy2.x = 40;
+	dummy2.y = 40;
+	
+	m_others[300] = dummy;
+	m_others[400] = dummy2;
 
 	std::cout << "Initialize\n";
 }
@@ -44,12 +55,29 @@ void GameFramework::Update()
 {
 	// For Test
 	static int cnt = 0;
+	static int tcnt = 0;
 	if (cnt++ >= 60)
 	{
 		m_player.Update();
-		if (m_others.size())
+		if (m_others.size()>0)
 			for (auto ot : m_others) ot.second.Update();
 		cnt = 0;
+	}
+	if (tcnt++ >= 60)
+	{
+		cout << "count:" << m_others.count(300) << "\n";
+		cout << "size:" << m_others.size() << "\n";
+		if (m_others.size() > 0)
+		{
+			int i = 0;
+			for (auto ot : m_others)
+			{
+				cout << "first:" << ot.first << "\n";
+				cout << "others[" << i++ << "] id:" << ot.second.id << " - ("
+					<< ot.second.x << "," << ot.second.y << ")\n";
+			}
+		}
+		tcnt = 0;
 	}
 }
 
@@ -58,8 +86,8 @@ void GameFramework::Draw()
 	sf_window.clear();
 	sf_window.setView(sf_view);
 	// Draw Here
-	m_ground.Draw(sf_window, sf::Vector2f(-m_player.x, -m_player.y));
-	if (m_others.size())
+	//m_ground.Draw(sf_window, sf::Vector2f(-m_player.x, -m_player.y));
+	if (m_others.size()>0)
 	{
 		for (auto ot : m_others)
 		{
@@ -180,11 +208,11 @@ void GameFramework::EnterProcess(sc_packet_enter* _packet)
 	sc_packet_enter packet = *_packet;
 	Object oth;
 	oth.id = packet.id;
-	oth.Initialize(oth.id);
+	oth.Initialize(oth.id, "chess2.png");
 	oth.x = packet.x;
 	oth.y = packet.y;
 	cout << oth.id << " " << oth.x << " " << oth.y << "\n";
-	m_others.insert(make_pair(oth.id, oth));
+	m_others.insert({ oth.id, oth });
 }
 
 void GameFramework::TestPing()

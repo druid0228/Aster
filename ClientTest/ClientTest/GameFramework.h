@@ -23,33 +23,34 @@ class Object
 	const int size = 16;
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
+	string m_texture_name;
 	bool initialized;
 public:
 	int id;
 	int x, y;
 
+	int midWidth = 400;
+	int midHeight = 200;
 
 	Object() : initialized(false)
 	{}
 
-	void Initialize(int _id)
+	void Initialize(int _id,string texture = "hero.png")
 	{
 		id = _id;
 		sp_x = 10;
 		sp_y = 10;
-		bool success = m_texture.loadFromFile("hero.png");
+		m_texture_name = texture;
+		bool success = m_texture.loadFromFile(texture);
 		if (false == success) {
 			cout << "Image loading failed!!\n";
 		}
 		m_sprite.setTexture(m_texture);
 		initialized = true;
+		cout << "object Initialized id:" << _id << "\n";
 	}
 	void Update()
 	{
-		static int count = 0;
-
-		if (count++ < 20) return;
-		count = 0;
 		sp_x += 1;
 		if (sp_x > 2)
 		{
@@ -66,11 +67,37 @@ public:
 		}
 		m_sprite.setTextureRect(sf::IntRect(
 			sp_x * size, sp_y * size,  size, size));
-		m_sprite.setPosition(400 + x,200 + y);
+		m_sprite.setPosition(midWidth + x, midHeight + y);
 		window.draw(m_sprite);
 	}
 
 	bool operator==(const Object& rhs) const{ return id == rhs.id; }
+	Object operator=(const Object& rhs)
+	{
+		sp_x = rhs.sp_x;
+		sp_y = rhs.sp_y;
+		initialized = rhs.initialized;
+
+		id = rhs.id;
+		x = rhs.x;
+		y = rhs.y;
+		midWidth = rhs.midWidth;
+		midHeight = rhs.midHeight;
+		m_texture = rhs.m_texture;
+		m_texture_name = rhs.m_texture_name;
+		m_sprite = rhs.m_sprite;
+		bool success = m_texture.loadFromFile(m_texture_name);
+		if (success == false) {
+			cout << "texture_name: " << m_texture_name << "\n";
+			cout << "failed loadFromFile in Operator=\n";
+		}
+		else {
+			cout << "SUCCESS\n";
+		}
+
+		m_sprite.setTexture(m_texture);
+		return *this;
+	}
 	
 };
 
@@ -84,8 +111,7 @@ class GameFramework
 	Ground m_ground;
 	Object m_player;
 	int m_pid;
-	//vector<Object> m_others;
-	unordered_map<int,Object> m_others;
+	map<int,Object> m_others;
 
 	int gid;
 public:
@@ -112,4 +138,5 @@ private:
 	void MoveProcess(sc_packet_move* packet);
 	void EnterProcess(sc_packet_enter* packet);
 };
+
 
