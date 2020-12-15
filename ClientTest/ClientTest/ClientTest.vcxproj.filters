@@ -19,6 +19,9 @@
     <Filter Include="CoolTime">
       <UniqueIdentifier>{495c3277-ee48-4b10-9b61-6e0933b648a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameTimer">
+      <UniqueIdentifier>{1378a85e-b04d-42aa-8a7c-896dba6394ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="CoolTime.cpp">
       <Filter>CoolTime</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
+      <Filter>GameTimer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,6 +72,9 @@
     </ClInclude>
     <ClInclude Include="CoolTime.h">
       <Filter>CoolTime</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>GameTimer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

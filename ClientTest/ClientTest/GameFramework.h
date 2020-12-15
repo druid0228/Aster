@@ -1,4 +1,5 @@
 #include"globalHeader.h"
+#include"GameTimer.h"
 
 class Ground
 {
@@ -103,11 +104,14 @@ public:
 
 class GameFramework
 {
+private:
 	sf::RenderWindow sf_window;
 	sf::View sf_view;
 
 	sf::TcpSocket sf_socket;
 
+	GameTimer gfGameTimer;
+private:
 	Ground m_ground;
 	Object m_player;
 	int m_pid;

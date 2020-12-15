@@ -29,6 +29,7 @@ void GameFramework::Initialize()
 	m_others[300] = dummy;
 	m_others[400] = dummy2;
 
+	gfGameTimer.Start();
 	std::cout << "Initialize\n";
 }
 
@@ -56,6 +57,10 @@ void GameFramework::Update()
 	// For Test
 	static int cnt = 0;
 	static int tcnt = 0;
+
+	float elapsed = gfGameTimer.Tick();
+	cout << "elap:" << elapsed << "\n";
+
 	if (cnt++ >= 60)
 	{
 		m_player.Update();
