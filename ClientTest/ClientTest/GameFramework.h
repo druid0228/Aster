@@ -1,5 +1,6 @@
 #include"globalHeader.h"
 #include"GameTimer.h"
+#include"CoolTime.h"
 
 class Ground
 {
@@ -20,7 +21,7 @@ public:
 
 class Object
 {
-	int sp_x, sp_y;
+	float sp_x, sp_y;
 	const int size = 16;
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
@@ -28,7 +29,7 @@ class Object
 	bool initialized;
 public:
 	int id;
-	int x, y;
+	float x, y;
 
 	int midWidth = 400;
 	int midHeight = 200;
@@ -50,9 +51,9 @@ public:
 		initialized = true;
 		cout << "object Initialized id:" << _id << "\n";
 	}
-	void Update()
+	void Update(float elapsedTime)
 	{
-		sp_x += 1;
+		sp_x += elapsedTime;
 		if (sp_x > 2)
 		{
 			sp_x = 0;
@@ -66,8 +67,10 @@ public:
 		if (false == initialized) {
 			Initialize(id);
 		}
+		
 		m_sprite.setTextureRect(sf::IntRect(
-			sp_x * size, sp_y * size,  size, size));
+			static_cast<int>(sp_x) * size, sp_y * size,
+			size, size));
 		m_sprite.setPosition(midWidth + x, midHeight + y);
 		window.draw(m_sprite);
 	}
@@ -99,7 +102,6 @@ public:
 		m_sprite.setTexture(m_texture);
 		return *this;
 	}
-	
 };
 
 class GameFramework
@@ -111,6 +113,7 @@ private:
 	sf::TcpSocket sf_socket;
 
 	GameTimer gfGameTimer;
+	CoolTime gfCoolTime;
 private:
 	Ground m_ground;
 	Object m_player;

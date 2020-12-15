@@ -55,20 +55,16 @@ int GameFramework::Run()
 void GameFramework::Update()
 {
 	// For Test
-	static int cnt = 0;
-	static int tcnt = 0;
-
+	static float cnt = 0;
 	float elapsed = gfGameTimer.Tick();
-	cout << "elap:" << elapsed << "\n";
 
-	if (cnt++ >= 60)
-	{
-		m_player.Update();
-		if (m_others.size()>0)
-			for (auto ot : m_others) ot.second.Update();
-		cnt = 0;
-	}
-	if (tcnt++ >= 60)
+	//Update
+	m_player.Update(elapsed);
+	if (m_others.size() > 0)
+		for (auto ot : m_others) ot.second.Update(elapsed);
+	
+	cnt += elapsed;
+	if (cnt >= 1)
 	{
 		cout << "count:" << m_others.count(300) << "\n";
 		cout << "size:" << m_others.size() << "\n";
@@ -82,7 +78,7 @@ void GameFramework::Update()
 					<< ot.second.x << "," << ot.second.y << ")\n";
 			}
 		}
-		tcnt = 0;
+		cnt = 0;
 	}
 }
 
